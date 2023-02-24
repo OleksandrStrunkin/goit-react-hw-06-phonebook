@@ -4,8 +4,8 @@ import { nanoid } from "nanoid";
 export const addContact = createAction('contacts/add', data => {
     return {
         payload: {
-            ...data,
             id: nanoid(),
+            ...data,
         }
     }
 });

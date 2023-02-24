@@ -1,57 +1,65 @@
-import { useState, useEffect } from 'react';
+// import { useState, useEffect } from 'react';
 import ContactList from './ContactList/ContactLIst';
 import ContactForm from './ContactForm/ContactForm';
-import { nanoid } from 'nanoid';
 import Filter from './Filter/Filter';
+import { useSelector, useDispatch} from 'react-redux';
+import { addContact, deleteContact } from 'redux/contacts/contacts-actions';
+import { setFilter } from 'redux/filter/filter-action';
+import { getFilter } from 'redux/filter/filter-selectors';
 
-const KEY = 'contacts';
+import { getAllContacts } from 'redux/contacts/contacts-selectors';
 
-const contactsList = [
-  { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-  { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-  { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-  { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-];
+
+
+
 
 export default function App() {
-  const [contacts, setContacts] = useState(() => {
-    const cont = localStorage.getItem(KEY);
-    const contacts = JSON.parse(cont);
-    return contacts ? contacts : contactsList;
-  });
-  const [filter, setFilter] = useState('');
+  // const [contacts, setContacts] = useState(() => {
+  //   const cont = localStorage.getItem(KEY);
+  //   const contacts = JSON.parse(cont);
+  //   return contacts ? contacts : contactsList;
+  // });
+ const contacts = useSelector(getAllContacts);
+//  const [filter, setFilter] = useState('');
+const filter = useSelector(getFilter);
 
-  useEffect(() => {
-    if (contacts.length === 0) {
-      return;
-    }
-    localStorage.setItem(KEY, JSON.stringify(contacts));
-  }, [contacts]);
+ const dispatch = useDispatch();
 
-  const addContact = (name, number) => {
-    const contact = {
-      id: nanoid(),
-      name,
-      number,
-    };
+  // useEffect(() => {
+  //   if (contacts.length === 0) {
+  //     return;
+  //   }
+  //   localStorage.setItem(KEY, JSON.stringify(contacts));
+  // }, [contacts]);
 
+  const onAddContact = (name, number) => {
     let names = contacts.map(cont => cont.name.toLocaleLowerCase());
-    if (names.includes(name.toLocaleLowerCase())) {
+      if (names.includes(name.toLocaleLowerCase())) {
       alert(`Список вже має ім'я ${name}`);
       return;
     }
+    //   const contact = {
+    //   id: nanoid(),
+    //   name,
+    //   number,
+    // };
 
-    setContacts(prevState => [contact, ...prevState]);
+    
+  
+    // setContacts(prevState => [contact, ...prevState]);
+
+    dispatch(addContact({name, number}));
   };
 
-  const deleteContact = contactId => {
-    setContacts(prevState => [
-      ...prevState.filter(contact => contact.id !== contactId),
-    ]);
+  const onDeleteContact = contactId => {
+    // setContacts(prevState => [
+    //   ...prevState.filter(contact => contact.id !== contactId),
+    // ]);
+    dispatch(deleteContact(contactId));
   };
 
   const changeFilter = e => {
-    setFilter(e.currentTarget.value);
+    dispatch(setFilter(e.currentTarget.value));
   };
 
   const visibleContacts = contacts.filter(contact =>
@@ -60,9 +68,9 @@ export default function App() {
 
   return (
     <>
-      <ContactForm addContact={addContact} />
+      <ContactForm  addContact={onAddContact}/>
       <Filter onChange={changeFilter} value={filter} />
-      <ContactList contacts={visibleContacts} deleteContact={deleteContact} />
+      <ContactList contacts={visibleContacts}  deleteContact={onDeleteContact}/>
     </>
   );
 }
