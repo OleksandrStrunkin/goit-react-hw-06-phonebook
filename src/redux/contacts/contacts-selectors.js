@@ -1,13 +1,9 @@
 export const getAllContacts = store => store.contacts;
-// export const getFilteredBooks = ({contacts, filter}) => {
-//     if (!filter) {
-//         return contacts;
-//     }
-
-//     const normalizedFilter = filter.toLowerCase();
-//     const result = contacts.filter(({ title, author }) => {
-//         return (title.toLowerCase().includes(normalizedFilter) || author.toLowerCase().includes(normalizedFilter))
-//     })
-
-//     return result;
-// }
+export const getFilteredContacts = ({ contacts = [], filter }) => {
+    const normalizedFilter = filter.toLowerCase();
+    const result = contacts.filter(({ name }) => {
+      const normalizedName = name.toLowerCase();
+      return normalizedName.includes(normalizedFilter);
+    });
+    return result;
+  };

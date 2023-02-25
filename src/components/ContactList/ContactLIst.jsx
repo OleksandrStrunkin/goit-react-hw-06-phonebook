@@ -1,12 +1,24 @@
-import PropTypes from 'prop-types';
+
 import styled from './ContactList.module.css'
-const ContactList = ({ contacts, deleteContact }) => {
+import { nanoid } from "nanoid";
+import { useSelector, useDispatch } from 'react-redux';
+
+import { deleteContact } from 'redux/contacts/contacts-slice';
+import { getFilteredContacts } from 'redux/contacts/contacts-selectors';
+
+const ContactList = () => {
+    const dispatch = useDispatch();
+    const contacts = useSelector(getFilteredContacts);
+  
+    const onDeleteContact = id => {
+      dispatch(deleteContact(id));
+    };
      return (
          <ul className={styled.list}>
              {contacts.map((contact) => {
                  return (  
-                         <li className={styled.listItem} key={contact.id}>{contact.name}<p>{contact.number}</p>
-                            <button onClick={() => deleteContact(contact.id)}>Видалити</button>
+                         <li className={styled.listItem} key={nanoid()}>{contact.name}<p>{contact.number}</p>
+                            <button onClick={() => onDeleteContact(contact.id)}>Видалити</button>
                          </li>
                  )
              } )}
@@ -15,12 +27,3 @@ const ContactList = ({ contacts, deleteContact }) => {
 }
 
 export default ContactList
-
-ContactList.propTypes = {
-    contacts: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        number: PropTypes.string.isRequired,
-    })).isRequired,
-    deleteContact: PropTypes.func.isRequired,
-};
